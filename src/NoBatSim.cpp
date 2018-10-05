@@ -42,17 +42,13 @@ int main()
 			newPitch = false;
 			for (int j = 0; j < subline.length(); j++)
 			{
-				if (subline.substr(j, 1).compare(breakChar) == 0 || j + 1 == subline.length()) // loop through string and store each cell
+				if (subline.substr(j, 1).compare(breakChar) == 0 || j + 1 == subline.length()) // loop through row and store each cell
 				{
 					if ((j - startValue + 1) < subline.length())
 					{
 						line = subline.substr(startValue, (j - startValue) + 1);
-						//TextOut(hdc, 0, x += 20, currentField[i].c_str(), strlen(currentField[i].c_str()));
-						//TextOut(hdc, 0, x += 20, line.c_str(), strlen(line.c_str()));
-						//TextOut(hdc, 700, 700, " ", 1);
 						currentPitch.push_back(line);
 						startValue = j + 1;
-						//std::this_thread::sleep_for(std::chrono::milliseconds(10));
 					}
 					i++;
 				}
@@ -60,6 +56,7 @@ int main()
 			// check if our count matches the data. If it doesn't, either skip pitches or generate new ones to realign.
 			int ballCount = stoi(currentPitch.at(BALL_COUNT));
 			int strikeCount = stoi(currentPitch.at(STRIKE_COUNT));
+			// skip pitch to catch up
 			if ((ballCount > outerBallCount || strikeCount > outerStrikeCount) && (outerBallCount == 0 && outerStrikeCount == 0))
 			{
 				currentPitch.clear();
@@ -67,12 +64,12 @@ int main()
 				startValue = 0;
 				continue;
 			}
-			else if ((ballCount < outerBallCount || strikeCount < outerStrikeCount) && (ballCount == 0 && strikeCount == 0))
+			else if ((ballCount < outerBallCount || strikeCount < outerStrikeCount) && (ballCount == 0 && strikeCount == 0)) // ran out of pitches
 			{
 				while (outerBallCount < 4 && outerStrikeCount < 3)
 				{
 					int randomPitch = std::rand() % 1000 + 1;
-					if (randomPitch <= zonePercent)
+					if (randomPitch <= zonePercent) // generate strike or ball
 						outerStrikeCount++;
 					else
 						outerBallCount++;
@@ -95,7 +92,7 @@ int main()
 			{
 				if (currentPitch.at(PITCH_TYPE).compare(reviewableOutcomes[pti]) == 0)
 				{
-					if (pti == 9)
+					if (pti == 9) // hit by pitch
 					{
 						outerBallCount = 0, outerStrikeCount = 0;
 						inPA = false;
@@ -103,14 +100,14 @@ int main()
 						totalHitByPitches++;
 						totalPlateAppearences++;
 					}
-					else if (pti > 5)
+					else if (pti > 5) // reviewable pitch
 					{
 						double ball_x = stod(currentPitch.at(PLATE_X));
 						double ball_y = stod(currentPitch.at(PLATE_Y));
 						double top_zone = stod(currentPitch.at(ZONE_TOP));
 						double bot_zone = stod(currentPitch.at(ZONE_BOTTOM));
-						if (ball_x > -0.839 && ball_x < 0.839)
-							if (ball_y < top_zone && ball_y > bot_zone)
+						if (ball_x > -0.839 && ball_x < 0.839) // if any part of the ball crossed the plate on the x axis
+							if (ball_y < top_zone && ball_y > bot_zone) // if ball was between the top and bottom zone coordinates
 								outerStrikeCount++;
 							else
 								outerBallCount++;
@@ -131,7 +128,7 @@ int main()
 						}
 						newPitch = true;
 
-						if (outerBallCount < 4 && outerStrikeCount < 3)
+						if (outerBallCount < 4 && outerStrikeCount < 3) // if real life PA ended but the simulated PA didn't
 						{
 							while (outerBallCount < 4 && outerStrikeCount < 3)
 							{
@@ -156,7 +153,7 @@ int main()
 						}
 						outerBallCount = 0, outerStrikeCount = 0;
 					}
-					else
+					else // just determine ball/strike
 					{
 						double ball_x = stod(currentPitch.at(PLATE_X));
 						double ball_y = stod(currentPitch.at(PLATE_Y));
@@ -225,20 +222,21 @@ int main()
 					outerBallCount = 0, outerStrikeCount = 0;
 				}
 			}
-			else if (!inPA)
+			else if (!inPA) // plate appearence ended
 			{
 				currentPitch.clear();
 				i = 0;
 				startValue = 0;
 				continue;
 			}
-			if (newPitch)
+			if (newPitch) // skip called ball/strike if we altered the pitch
 			{
 				currentPitch.clear();
 				i = 0;
 				startValue = 0;
 				continue;
 			}
+			// the pitch is either a called ball or strike, so no need to check anything
 			inPA = true;
 			if (currentPitch.at(PITCH_TYPE).compare(called) == 0)
 				outerStrikeCount++;
