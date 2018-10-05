@@ -582,7 +582,7 @@ PACKAGE_STRING='nobatsim 1.1'
 PACKAGE_BUGREPORT=''
 PACKAGE_URL=''
 
-ac_unique_file="NoBatSim.cpp"
+ac_unique_file="src/NoBatSim.cpp"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>

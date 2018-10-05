@@ -2,11 +2,11 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT(nobatsim, 1.1)
-AC_CONFIG_SRCDIR([NoBatSim.cpp])
+AC_INIT(nobatsim, 1.1,)
+AC_CONFIG_SRCDIR([src/NoBatSim.cpp])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile])
-AM_INIT_AUTOMAKE(foreign)
+AM_INIT_AUTOMAKE([foreign subdir-objects])
 
 # Checks for programs.
 AC_PROG_CXX
